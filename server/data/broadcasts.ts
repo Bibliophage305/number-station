@@ -20,7 +20,7 @@ export interface Broadcast {
   start: Date
   repeat: RepeatType
   /** One char per second, broadcast starting at `start` (or each occurrence). */
-  numbers: string
+  message: string
 }
 
 export const broadcasts: Broadcast[] = [
@@ -28,18 +28,6 @@ export const broadcasts: Broadcast[] = [
     id: 'thom-message',
     start: new Date('2026-01-01T22:00:00Z'),
     repeat: 'five-minutes',
-    numbers: 'HI THOM',
+    message: 'HI THOM',
   },
-  // {
-  //   id: 'sunday-special',
-  //   start: new Date('2026-01-04T09:00:00Z'), // a Sunday
-  //   repeat: 'weekly',
-  //   numbers: '00119284756',
-  // },
-  // {
-  //   id: 'monthly-long-one',
-  //   start: new Date('2026-01-15T03:30:00Z'),
-  //   repeat: 'monthly',
-  //   numbers: '918273645500192',
-  // },
 ]

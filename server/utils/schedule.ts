@@ -1,12 +1,25 @@
 import { broadcasts, type Broadcast, type RepeatType } from '../data/broadcasts'
 
+const DEFAULT_SALT = 0x9e3779b9 // 2654435769 in decimal - same value, just written as hex here
+
 /**
- * Change this to something private (e.g. read from process.env / Nuxt
- * runtimeConfig.numberStationSalt) before deploying. Anyone who has your
- * source AND knows this constant can precompute every "random" char in
- * advance, so don't commit the real value to a public repo.
+ * Accepts either the raw env var (a string, since process.env values always
+ * are) or the numeric fallback, and returns a valid salt for the hash below.
+ * Falls back to the default if the env value can't be parsed, rather than
+ * silently degrading to an all-zero salt - NaN ^ x === x in JS, so a bad
+ * env var would otherwise make the "random" sequence far more predictable
+ * without ever throwing an error.
  */
-const SALT = 0x9e3779b9
+function parseSalt(value: string | number): number {
+  const parsed = typeof value === 'number' ? value : parseInt(value, 10)
+  if (!Number.isFinite(parsed)) {
+    console.warn('[number-station] SALT env var is not a valid integer, using default')
+    return DEFAULT_SALT
+  }
+  return parsed
+}
+
+const SALT = parseSalt(process.env.SALT ?? DEFAULT_SALT)
 
 function periodSeconds(repeat: RepeatType): number | null {
   switch (repeat) {
@@ -29,7 +42,7 @@ function periodSeconds(repeat: RepeatType): number | null {
  * For a given broadcast, find the start time of the occurrence that would
  * be active at `now`, if any. Returns null if the broadcast hasn't started
  * repeating yet at all. Does NOT check duration - callers must also check
- * that `now` falls within `numbers.length` seconds of the result.
+ * that `now` falls within `message.length` seconds of the result.
  *
  * All calendar math is done in UTC to avoid DST/timezone ambiguity.
  */
@@ -85,8 +98,8 @@ export function activeChar(b: Broadcast, now: Date): string | null {
   const occStart = getOccurrenceStart(b, now)
   if (!occStart) return null
   const elapsedSec = Math.floor((now.getTime() - occStart.getTime()) / 1000)
-  if (elapsedSec < 0 || elapsedSec >= b.numbers.length) return null
-  return b.numbers[elapsedSec]
+  if (elapsedSec < 0 || elapsedSec >= b.message.length) return null
+  return b.message[elapsedSec]
 }
 
 // Deliberately excludes the space character - the UI uses " " as its
