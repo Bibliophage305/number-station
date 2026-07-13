@@ -89,6 +89,12 @@ export function activeChar(b: Broadcast, now: Date): string | null {
   return b.numbers[elapsedSec]
 }
 
+// Deliberately excludes the space character - the UI uses " " as its
+// "empty slot" padding sentinel, so a real broadcast space would be
+// visually indistinguishable from an unfilled slot.
+const CHARSET =
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~'
+
 /**
  * Deterministic, stateless "random" char for a given unix second.
  * Same second -> same char, for every user, every server instance,
@@ -100,7 +106,7 @@ export function pseudoRandomChar(unixSeconds: number, salt = SALT): string {
   h = Math.imul(h ^ (h >>> 16), 2246822519)
   h = Math.imul(h ^ (h >>> 13), 3266489917)
   h ^= h >>> 16
-  return String((h >>> 0) % 10)
+  return CHARSET[(h >>> 0) % CHARSET.length]
 }
 
 /**
