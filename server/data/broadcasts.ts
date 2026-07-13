@@ -28,6 +28,6 @@ export const broadcasts: Broadcast[] = [
     id: 'thom-message',
     start: new Date('2026-01-01T22:00:00Z'),
     repeat: 'five-minutes',
-    message: 'HI THOM',
+    message: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
   },
 ]
